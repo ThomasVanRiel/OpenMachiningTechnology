@@ -6,8 +6,8 @@ Test graphics to use in this book
 
 
 <script setup>
-    import CustomComponent from './components/d3test.vue'
 import PlotComponent from './components/PlotFigure.vue'
+import CustomComponent from './components/D3Test.vue'
 </script>
 
 
