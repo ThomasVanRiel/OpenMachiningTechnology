@@ -74,5 +74,6 @@ export default defineConfig({
       'link',
       { href: 'https://fonts.googleapis.com/css2?family=Source+Sans+3&family=Source+Serif+4:opsz@8..60&display=swap', rel: 'stylesheet' }
     ]
-  ]
+  ],
+  cleanUrls: true
 })

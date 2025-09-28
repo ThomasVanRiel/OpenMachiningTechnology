@@ -8,6 +8,7 @@ Test graphics to use in this book
 <script setup>
 import PlotComponent from './components/PlotFigure.vue'
 import CustomComponent from './components/D3Test.vue'
+import MachiningWindow from './components/MachiningWindow.vue'
 </script>
 
 
@@ -27,3 +28,9 @@ This is a static image as a reference.
 ![An image](./images/SEM_Wide.png)
 
 ![Another image](./images/ECM_EDM_Pourbaix_Ti.png)
+
+## 3D graphic
+
+::: tip Interactive
+<MachiningWindow />
+:::
