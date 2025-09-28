@@ -1,0 +1,19 @@
+/* .vitepress/theme/my-fonts.css */
+/*
+:root {
+    --vp-font-family-base: "Source Sans 3", sans-serif; 
+    --vp-font-family-mono: Source Code Pro, monospace; 
+}
+*/
+
+.main * {
+  font-family: "source Serif 4", var(--vp-font-family-base);
+}
+
+.main code, .main pre {
+  font-family: "Source Code Pro", var(--vp-font-family-mono);
+}
+
+.main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+  font-family: "Source Sans 3", var(--vp-font-family-base);
+}
