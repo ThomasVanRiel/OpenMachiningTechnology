@@ -26,7 +26,7 @@ export default defineConfig({
       {
         text: 'II - Technological considerations',
         items: [
-          { text: 'Introduction' },
+          { text: 'Introduction', link: '/introduction-2' },
           { text: 'Clamping'},
           
         ]
@@ -47,6 +47,9 @@ export default defineConfig({
     outline: 2, 
     footer: {
       message: 'Released under the MIT License.'
+    },
+    search: {
+      provider: 'local'
     },
     
   },

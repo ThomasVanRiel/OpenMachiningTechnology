@@ -7,5 +7,9 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "@observablehq/plot": "^0.6.17",
+    "d3": "^7.9.0"
   }
 }
