@@ -27,9 +27,11 @@ export default defineConfig({
         text: 'II - Technological considerations',
         items: [
           { text: 'Introduction', link: '/introduction-2' },
-          { text: 'Clamping'},
-          
-        ]
+          { text: 'Clamping', items: [
+            { text: 'Item A' },
+            { text: 'Item B' },
+                      
+        ]}]
       },
       {
         text: 'III - Practical applications',
@@ -44,7 +46,10 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ThomasVanRiel/OpenMachiningTechnology' }
     ],
-    outline: 2, 
+    outline: {
+      level: [2, 6],
+      label: 'On this page'
+    }, 
     footer: {
       message: 'Released under the MIT License.'
     },
