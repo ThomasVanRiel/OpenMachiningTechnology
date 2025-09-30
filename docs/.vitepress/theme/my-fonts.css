@@ -1,11 +1,25 @@
-/* .vitepress/theme/my-fonts.css */
-/*
-:root {
-    --vp-font-family-base: "Source Sans 3", sans-serif; 
-    --vp-font-family-mono: Source Code Pro, monospace; 
-}
-*/
+/*https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css*/
 
+/* .vitepress/theme/my-fonts.css */
+:root {
+    --vp-font-family-base: "Source Serif 4", serif; 
+    --vp-font-family-mono: Source Code Pro, monospace; 
+
+    --vp-c-tip-soft: rgba(99, 185, 255, 0.14);
+}
+
+.VPNav, .VPSidebar, .VPFooter, .VPDocFooter, .VPDocAside, .VPHomeHero, .VPHomeFeatures, .VPHomeSponsors, .VPHomeNews, .VPHomeFooter {
+  font-family: "Source Sans 3", sans-serif ;
+}
+
+.vp-doc .custom-block {
+  font-family: "Source Sans Pro", sans-serif ;
+  margin: 16px -16px;
+}
+
+
+
+/*
 .main * {
   font-family: "source Serif 4", var(--vp-font-family-base);
 }
@@ -17,3 +31,4 @@
 .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
   font-family: "Source Sans 3", var(--vp-font-family-base);
 }
+  */
