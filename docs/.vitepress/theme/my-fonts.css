@@ -3,7 +3,7 @@
 /* .vitepress/theme/my-fonts.css */
 :root {
     --vp-font-family-base: "Source Serif 4", serif; 
-    --vp-font-family-mono: Source Code Pro, monospace; 
+    --vp-font-family-mono: "Source Code Pro", monospace; 
 
     --vp-c-tip-soft: rgba(99, 185, 255, 0.14);
 }

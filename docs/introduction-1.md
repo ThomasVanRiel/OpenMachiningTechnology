@@ -12,6 +12,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, urna eu ti
 **Interactive Plot Placeholder**  
  
 _An interactive plot will be displayed here. Please check back later for the visualization._
+
+``` C++
+#include <iostream>
+int main() {
+    std::cout << "Hello World!" << std::endl;
+}
+```
 :::
 
 ## Third chapter
