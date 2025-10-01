@@ -27,5 +27,6 @@ export const sidebar: DefaultTheme.Sidebar = [
       { text: 'Item F' },
     ]
   },
+  { text: 'References', link: '/references' }
   
 ]
