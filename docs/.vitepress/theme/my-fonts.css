@@ -6,6 +6,17 @@
     --vp-font-family-mono: "Source Code Pro", monospace; 
 
     --vp-c-tip-soft: rgba(99, 185, 255, 0.14);
+
+    --vp-c-indigo-1: #00407A;
+    --vp-c-indigo-2: #3a5ccc;
+    --vp-c-indigo-3: #5672cd;
+    --vp-c-indigo-soft: rgba(100, 108, 255, 0.14);
+
+    /* Brand colors */
+    --vp-c-brand-1: var(--vp-c-indigo-1);
+    --vp-c-brand-2: var(--vp-c-indigo-2);
+    --vp-c-brand-3: var(--vp-c-indigo-3);
+    --vp-c-brand-soft: var(--vp-c-indigo-soft);
 }
 
 .VPNav, .VPSidebar, .VPFooter, .VPDocFooter, .VPDocAside, .VPHomeHero, .VPHomeFeatures, .VPHomeSponsors, .VPHomeNews, .VPHomeFooter {

@@ -6,7 +6,8 @@ export const sidebar: DefaultTheme.Sidebar = [
     text: 'I - Theoretical background',
     items: [
       { text: 'Introduction', link: '/theoretical-background/introduction' },
-      { text: 'Equation test', link: '/theoretical-background/equation-test' },
+      { text: 'Equation Test', link: '/theoretical-background/equation-test' },
+      { text: 'Cutting Geometry', link: '/theoretical-background/cutting-geometry' },
 
     ]
   },

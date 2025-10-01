@@ -1,17 +1,24 @@
-## Proposed file structure
+## Style guide
+
+
+### Directory structure
+
+All .md files are named in kebab-casing.md, components in PascalCase.vue
 
 ```
 Book
 ├─ Part I
 │  ├─ Chapter 1
-│  │  ├─ Page 1
-│  │  ├─ Page 2
-│  │  └─ ...
 │  ├─ Chapter 2
 │  └─ ...
 ├─ Part 2
 └─ ...
 ```
+
+
+### Citations
+Citations are formatted according to the APA guidelines (to avoid complex numbering schemes (IEEE) which are sadly difficult to interpret using multiple webpages)
+
 
 ## Instructions for contributors
 ### Initial setup
