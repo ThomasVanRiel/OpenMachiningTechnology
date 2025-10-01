@@ -25,9 +25,9 @@ This is a test using [Observable Plot](https://observablehq.com/plot/what-is-plo
 
 ## Image test
 This is a static image as a reference.
-![An image](./images/SEM_Wide.png)
+![An image](/images/SEM_Wide.png)
 
-![Another image](./images/ECM_EDM_Pourbaix_Ti.png)
+![Another image](/images/ECM_EDM_Pourbaix_Ti.png)
 
 ## 3D graphic
 
