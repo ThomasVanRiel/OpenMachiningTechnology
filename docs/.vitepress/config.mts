@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import { sidebar } from './sidebar.mts'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -13,35 +14,7 @@ export default defineConfig({
       { text: 'Documentation', link: '/about-this-book' }
     ],
     
-    sidebar: [
-      { text: 'About this book', link: '/about-this-book' },
-      {
-        text: 'I - Theoretical background',
-        items: [
-          { text: 'Introduction', link: '/introduction-1' },
-          { text: 'Equation test', link: '/taylor' },
-          
-        ]
-      },
-      {
-        text: 'II - Technological considerations',
-        items: [
-          { text: 'Introduction', link: '/introduction-2' },
-          { text: 'Clamping', items: [
-            { text: 'Item A' },
-            { text: 'Item B' },
-                      
-        ]}]
-      },
-      {
-        text: 'III - Practical applications',
-        items: [
-          { text: 'Introduction' },
-          { text: 'Item F' },
-        ]
-      },
-      
-    ],
+    sidebar,
     
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ThomasVanRiel/OpenMachiningTechnology' }
