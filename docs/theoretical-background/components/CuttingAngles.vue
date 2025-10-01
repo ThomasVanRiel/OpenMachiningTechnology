@@ -1,72 +1,92 @@
-```markdown
-## D3 Canvas Vue Component Example
-
-Below is a basic Vue component that initializes a D3 canvas:
-
-```vue
 <template>
-    <div ref="canvas" class="canvas-container"></div>
+    <div class="cutting-angles-container">
+        <div ref="canvas" class="canvas-container"></div>
+        <div class="controls">
+            <div class="slider-group">
+                <label for="rake-slider">Rake Angle (α): {{ rakeDeg }}°</label>
+                <input 
+                    id="rake-slider"
+                    type="range" 
+                    v-model="rakeDeg" 
+                    min="-30" 
+                    max="30" 
+                    step="1"
+                    class="slider"
+                />
+            </div>
+            <div class="slider-group">
+                <label for="relief-slider">Relief Angle (γ): {{ reliefDeg }}°</label>
+                <input 
+                    id="relief-slider"
+                    type="range" 
+                    v-model="reliefDeg" 
+                    min="0" 
+                    max="20" 
+                    step="1"
+                    class="slider"
+                />
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import * as d3 from 'd3'
 
+// Color configuration - centralized for easy maintenance
+const colors = {
+  rakeAngle: 'black',           // Rake angle line and arc color
+  reliefAngle: 'black',          // Relief angle line and arc color  
+  betaAngle: 'black',          // Beta angle arc color
+  referenceLines: 'black',     // Dashed reference lines
+  hatchPattern: 'gray',        // Hatching pattern for cutting zone
+  arrowMarker: 'black',         // Arrow marker color
+  sliderThumb: '#4CAF50',      // Slider thumb color
+  labelText: '#333'            // Label text color
+}
+
 const canvas = ref(null)
+const rakeDeg = ref(10)
+const reliefDeg = ref(5)
 
-onMounted(() => {
-    // Get the container width
-    const containerWidth = canvas.value.clientWidth
+let svg = null
+let containerWidth = 0
+
+
+const drawDiagram = () => {
+    if (!svg) return
     
-    const svg = d3.select(canvas.value)
-        .append('svg')
-        .attr('width', '100%')
-        .attr('viewBox', `0 0 ${containerWidth} 300`)
-        .attr('height', 500)
-
-    // Define arrowhead marker
-    const defs = svg.append('defs')
+    // Clear previous content except defs
+    svg.selectAll('*:not(defs)').remove()
     
-    const arrowMarker = defs.append('marker')
-        .attr('id', 'arrowhead')
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 4)
-        .attr('refX', 0)
-        .attr('refY', 2)
-        .attr('orient', 'auto')
-        .attr('markerUnits', 'strokeWidth')
-    
-    arrowMarker.append('path')
-        .attr('d', 'M0,0 L0,4 L6,2 z')
-        .attr('fill', 'blue')
+    // Ensure hatching pattern exists (re-add if needed)
+    if (svg.select('#diagonalHatch').empty()) {
+        const defs = svg.select('defs').empty() ? svg.append('defs') : svg.select('defs')
+        
+        const hatchPattern = defs.append('pattern')
+            .attr('id', 'diagonalHatch')
+            .attr('patternUnits', 'userSpaceOnUse')
+            .attr('width', 8)
+            .attr('height', 8)
+            .attr('patternTransform', 'rotate(45)')
 
-    // Define hatching pattern for the cutting zone
-    const hatchPattern = defs.append('pattern')
-        .attr('id', 'diagonalHatch')
-        .attr('patternUnits', 'userSpaceOnUse')
-        .attr('width', 8)
-        .attr('height', 8)
-        .attr('patternTransform', 'rotate(45)')
+        hatchPattern.append('path')
+            .attr('d', 'M0,0 L0,8')
+            .attr('stroke', colors.hatchPattern)
+            .attr('stroke-width', 1)
+    }
 
-    hatchPattern.append('path')
-        .attr('d', 'M0,0 L0,8')
-        .attr('stroke', 'gray')
-        .attr('stroke-width', 1)
-
-
-    // Draw a line from the center outwards at a variable angle with the vertical axis (rake angle)
-    const rakeDeg = -20 // Change this value for different angles
-    const reliefDeg = 5 // Relief angle in degrees
     const lineLength = 200
     const arcRadius = 160
     const betaRadius = 140
     const labelOffset = 20
 
-    const rakeRad = (rakeDeg * Math.PI) / 180
-    const reliefRad = (reliefDeg * Math.PI) / 180
+    const rakeRad = (rakeDeg.value * Math.PI) / 180
+    const reliefRad = (reliefDeg.value * Math.PI) / 180
 
     const x1 = containerWidth / 2
-    const y1 = 150
+    const y1 = 300
     
     // Rake angle line
     const x2 = x1 + lineLength * Math.sin(rakeRad)
@@ -77,7 +97,7 @@ onMounted(() => {
         .attr('y1', y1)
         .attr('x2', x2)
         .attr('y2', y2)
-        .attr('stroke', 'blue')
+        .attr('stroke', colors.rakeAngle)
         .attr('stroke-width', 2)
     
     // Relief angle line (measured from horizontal)
@@ -89,7 +109,7 @@ onMounted(() => {
         .attr('y1', y1)
         .attr('x2', x3)
         .attr('y2', y3)
-        .attr('stroke', 'red')
+        .attr('stroke', colors.reliefAngle)
         .attr('stroke-width', 2)
 
     // Add reference lines for angle measurement
@@ -99,7 +119,7 @@ onMounted(() => {
         .attr('y1', y1)
         .attr('x2', x1)
         .attr('y2', y1 - lineLength)
-        .attr('stroke', 'gray')
+        .attr('stroke', colors.referenceLines)
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '5,5')
 
@@ -109,7 +129,7 @@ onMounted(() => {
         .attr('y1', y1)
         .attr('x2', x1 + lineLength)
         .attr('y2', y1)
-        .attr('stroke', 'gray')
+        .attr('stroke', colors.referenceLines)
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '5,5')
 
@@ -140,7 +160,7 @@ onMounted(() => {
         .attr('d', rakeArc)
         .attr('transform', `translate(${x1}, ${y1})`)
         .attr('fill', 'none')
-        .attr('stroke', 'blue')
+        .attr('stroke', colors.rakeAngle)
         .attr('stroke-width', 2)
 
     // Add arrows to the ends of the rake arc
@@ -150,7 +170,7 @@ onMounted(() => {
     
     svg.append('polygon')
         .attr('points', `${startArrowX-3},${startArrowY-5} ${startArrowX+3},${startArrowY-5} ${startArrowX},${startArrowY+2}`)
-        .attr('fill', 'blue')
+        .attr('fill', colors.rakeAngle)
         .attr('transform', `rotate(${rakeRad * 180 / Math.PI - 90}, ${startArrowX}, ${startArrowY})`)
 
     // Arrow at the end of the rake arc
@@ -159,7 +179,7 @@ onMounted(() => {
     
     svg.append('polygon')
         .attr('points', `${endArrowX-3},${endArrowY-5} ${endArrowX+3},${endArrowY-5} ${endArrowX},${endArrowY+2}`)
-        .attr('fill', 'blue')
+        .attr('fill', colors.rakeAngle)
         .attr('transform', `rotate(${90}, ${endArrowX}, ${endArrowY})`)
 
     
@@ -176,7 +196,7 @@ onMounted(() => {
         .attr('d', reliefArc)
         .attr('transform', `translate(${x1}, ${y1})`)
         .attr('fill', 'none')
-        .attr('stroke', 'red')
+        .attr('stroke', colors.reliefAngle)
         .attr('stroke-width', 2)
 
     // Beta angle arc (between rake and relief lines)
@@ -190,7 +210,7 @@ onMounted(() => {
         .attr('d', betaArc)
         .attr('transform', `translate(${x1}, ${y1})`)
         .attr('fill', 'none')
-        .attr('stroke', 'green')
+        .attr('stroke', colors.betaAngle)
         .attr('stroke-width', 2)
 
     // Add angle labels
@@ -202,7 +222,7 @@ onMounted(() => {
         .attr('x', rakeLabel_x)
         .attr('y', rakeLabel_y)
         .attr('text-anchor', 'middle')
-        .attr('fill', 'blue')
+        .attr('fill', colors.rakeAngle)
         .attr('font-size', '14px')
         .attr('font-weight', 'bold')
         .text('α')
@@ -215,7 +235,7 @@ onMounted(() => {
         .attr('x', reliefLabel_x)
         .attr('y', reliefLabel_y)
         .attr('text-anchor', 'middle')
-        .attr('fill', 'red')
+        .attr('fill', colors.reliefAngle)
         .attr('font-size', '14px')
         .attr('font-weight', 'bold')
         .text('γ')
@@ -229,17 +249,127 @@ onMounted(() => {
         .attr('x', betaLabel_x)
         .attr('y', betaLabel_y)
         .attr('text-anchor', 'middle')
-        .attr('fill', 'green')
+        .attr('fill', colors.betaAngle)
         .attr('font-size', '14px')
         .attr('font-weight', 'bold')
         .text('β')
+}
 
+onMounted(() => {
+    // Get the container width
+    containerWidth = canvas.value.clientWidth
+    
+    svg = d3.select(canvas.value)
+        .append('svg')
+        .attr('width', '100%')
+        .attr('viewBox', `0 0 ${containerWidth} 500`)
+        .attr('height', 500)
+
+    // Define arrowhead marker
+    const defs = svg.append('defs')
+    
+    const arrowMarker = defs.append('marker')
+        .attr('id', 'arrowhead')
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 4)
+        .attr('refX', 0)
+        .attr('refY', 2)
+        .attr('orient', 'auto')
+        .attr('markerUnits', 'strokeWidth')
+    
+    arrowMarker.append('path')
+        .attr('d', 'M0,0 L0,4 L6,2 z')
+        .attr('fill', colors.arrowMarker)
+
+    // Define hatching pattern for the cutting zone
+    const hatchPattern = defs.append('pattern')
+        .attr('id', 'diagonalHatch')
+        .attr('patternUnits', 'userSpaceOnUse')
+        .attr('width', 8)
+        .attr('height', 8)
+        .attr('patternTransform', 'rotate(45)')
+
+    hatchPattern.append('path')
+        .attr('d', 'M0,0 L0,8')
+        .attr('stroke', colors.hatchPattern)
+        .attr('stroke-width', 1)
+
+    // Draw initial diagram
+    drawDiagram()
+})
+
+// Watch for changes in slider values and redraw
+watch([rakeDeg, reliefDeg], () => {
+    drawDiagram()
 })
 </script>
 
 <style scoped>
+.cutting-angles-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.controls {
+    padding: 15px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.slider-group {
+    margin-bottom: 15px;
+}
+
+.slider-group:last-child {
+    margin-bottom: 0;
+}
+
+.slider-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: v-bind('colors.labelText');
+}
+
+.slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: v-bind('colors.sliderThumb');
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: v-bind('colors.sliderThumb');
+    cursor: pointer;
+    border: none;
+}
+
 .canvas-container {
     width: 100%;
+    position: relative;
+    height: 400px;
 }
 </style>
 ```

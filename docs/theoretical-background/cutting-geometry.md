@@ -3,7 +3,10 @@ import CuttingAnglesComponent from './components/CuttingAngles.vue'
 </script>
 
 ## Cutting angles
+::: tip Interactive
+Change the cutting angles using the sliders and observe how the cutting geometry changes. 
 <CuttingAnglesComponent />
+:::
 
 | Symbol | Name           | Description                                  |
 |--------|----------------|----------------------------------------------|
