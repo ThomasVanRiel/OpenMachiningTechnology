@@ -303,10 +303,12 @@ watch(() => props.inputs, () => {
 
 .controls-section {
     flex-shrink: 0;
+    /*
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    border: 1px solid #e9ecef;
+    border: 2px solid #e9ecef;
+    */
 }
 
 .controls-section.left {

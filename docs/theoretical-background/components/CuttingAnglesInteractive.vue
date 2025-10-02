@@ -3,7 +3,6 @@
         :inputs="inputConfigs"
         :initial-values="initialValues"
         :controls-columns="2"
-        controls-title="Cutting Tool Parameters"
         controls-position="top"
         :debounce-ms="10"
         @update:values="drawDiagram"
