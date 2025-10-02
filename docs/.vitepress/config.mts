@@ -11,7 +11,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/about-this-book' }
+      { text: 'Read the book', link: '/about-this-book' }
     ],
     
     sidebar,
@@ -29,7 +29,6 @@ export default defineConfig({
     search: {
       provider: 'local'
     },
-    
   },
   markdown: {
     math: true

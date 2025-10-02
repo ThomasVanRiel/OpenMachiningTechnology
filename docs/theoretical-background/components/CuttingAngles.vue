@@ -15,9 +15,9 @@
                 />
             </div>
             <div class="slider-group">
-                <label for="relief-slider">Relief Angle (γ): {{ reliefDeg }}°</label>
+                <label for="clearance-slider">Clearance Angle (γ): {{ reliefDeg }}°</label>
                 <input 
-                    id="relief-slider"
+                    id="clearance-slider"
                     type="range" 
                     v-model="reliefDeg" 
                     min="0" 
@@ -123,7 +123,7 @@ const drawDiagram = () => {
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '5,5')
 
-    // Horizontal reference line for relief angle
+    // Horizontal reference line for clearance angle
     svg.append('line')
         .attr('x1', x1)
         .attr('y1', y1)
@@ -135,12 +135,12 @@ const drawDiagram = () => {
 
     // Add arcs to indicate angles
     
-    // Filled pie section between rake and relief lines (cutting zone)
+    // Filled pie section between rake and clearance lines (cutting zone)
     const pieArc = d3.arc()
         .innerRadius(0)
         .outerRadius(lineLength)
         .startAngle(rakeRad) // Start from rake line
-        .endAngle(Math.PI/2 - reliefRad) // End at relief line
+        .endAngle(Math.PI/2 - reliefRad) // End at clearance line
 
     svg.append('path')
         .attr('d', pieArc)
@@ -184,13 +184,13 @@ const drawDiagram = () => {
 
     
 
-    // Relief angle arc (from horizontal reference to relief line)
+    // Relief angle arc (from horizontal reference to clearance line)
     // Relief line goes upward from horizontal, so angle should be negative
     const reliefArc = d3.arc()
         .innerRadius(arcRadius)
         .outerRadius(arcRadius)
         .startAngle(Math.PI/2) // Start from horizontal (rightward)
-        .endAngle(Math.PI/2-reliefRad) // End at relief angle (counter-clockwise from horizontal, upward)
+        .endAngle(Math.PI/2-reliefRad) // End at clearance angle (counter-clockwise from horizontal, upward)
 
     svg.append('path')
         .attr('d', reliefArc)
@@ -199,11 +199,11 @@ const drawDiagram = () => {
         .attr('stroke', colors.reliefAngle)
         .attr('stroke-width', 2)
 
-    // Beta angle arc (between rake and relief lines)
+    // Beta angle arc (between rake and clearance lines)
     const betaArc = d3.arc()
         .innerRadius(betaRadius)
         .outerRadius(betaRadius)
-        .startAngle(rakeRad) // Start from relief line
+        .startAngle(rakeRad) // Start from clearance line
         .endAngle(Math.PI/2-reliefRad) // End at rake line
 
     svg.append('path')
@@ -240,7 +240,7 @@ const drawDiagram = () => {
         .attr('font-weight', 'bold')
         .text('γ')
 
-    // Beta angle label (β) - between rake and relief lines
+    // Beta angle label (β) - between rake and clearance lines
     const betaAngle = (Math.PI/2 - rakeRad + reliefRad) / 2 // Middle angle between the two lines
     const betaLabel_x = x1 + (betaRadius + labelOffset) * Math.cos(betaAngle)
     const betaLabel_y = y1 - (betaRadius + labelOffset) * Math.sin(betaAngle)
