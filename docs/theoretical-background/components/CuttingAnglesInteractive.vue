@@ -5,7 +5,7 @@
         :controls-columns="2"
         controls-title="Cutting Tool Parameters"
         controls-position="top"
-        :debounce-ms="50"
+        :debounce-ms="10"
         @update:values="drawDiagram"
     >
         <template #default="{ values }">
