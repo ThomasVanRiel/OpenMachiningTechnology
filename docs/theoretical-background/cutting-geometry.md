@@ -1,5 +1,5 @@
 <script setup>
-import CuttingAnglesComponent from './components/CuttingAngles.vue'
+import CuttingAnglesComponent from './components/CuttingAnglesInteractive.vue'
 </script>
 # Cutting geometry
 
