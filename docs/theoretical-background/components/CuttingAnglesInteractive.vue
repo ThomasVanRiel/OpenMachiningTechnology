@@ -25,7 +25,7 @@ const inputConfigs = ref([
     {
         name: 'rakeAngle',
         type: 'slider',
-        label: 'Rake Angle (α)',
+        label: 'Rake Angle (γ)',
         min: -30,
         max: 30,
         step: 1,
@@ -37,7 +37,7 @@ const inputConfigs = ref([
     {
         name: 'reliefAngle',
         type: 'slider',
-        label: 'Relief Angle (γ)',
+        label: 'Relief Angle (α)',
         min: 0,
         max: 20,
         step: 1,
@@ -276,7 +276,7 @@ const drawDiagram = (values) => {
         .attr('stroke-width', params.lineStrokeWidth)
 
     // Add angle labels
-    // Rake angle label (α)
+    // Rake angle label (γ)
     const rakeLabel_x = x1 + (arcRadius + labelOffset) * Math.sin(rakeRad / 2)
     const rakeLabel_y = y1 - (arcRadius + labelOffset) * Math.cos(rakeRad / 2)
     
@@ -287,9 +287,9 @@ const drawDiagram = (values) => {
         .attr('fill', colors.rakeAngle)
         .attr('font-size', params.labelFontSize)
         .attr('font-weight', 'bold')
-        .text('α')
+        .text('γ')
 
-    // Relief angle label (γ)
+    // Relief angle label (α)
     const reliefLabel_x = x1 + (arcRadius + labelOffset) * Math.cos(reliefRad / 2)
     const reliefLabel_y = y1 - (arcRadius + labelOffset) * Math.sin(reliefRad / 2)
     
@@ -300,7 +300,7 @@ const drawDiagram = (values) => {
         .attr('fill', colors.reliefAngle)
         .attr('font-size', params.labelFontSize)
         .attr('font-weight', 'bold')
-        .text('γ')
+        .text('α')
 
     // Beta angle label (β) - between rake and clearance lines
     const betaAngle = (Math.PI/2 - rakeRad + reliefRad) / 2 // Middle angle between the two lines

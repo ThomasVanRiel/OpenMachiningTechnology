@@ -290,10 +290,15 @@ watch(() => props.inputs, () => {
 
 <style scoped>
 .interactive-content-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    box-sizing: border-box;
+    display: block;
+    padding: 16px;
+    margin: 16px -16px;
+    
+    background: rgba(99, 185, 255, 0.14);
+    border-radius: 8px;
+    
+    font-family: "Source Sans 3", sans-serif ;
 }
 
 .interactive-content-container.left,
@@ -331,7 +336,6 @@ watch(() => props.inputs, () => {
     margin: 0 0 15px 0;
     font-size: 1.1rem;
     font-weight: 600;
-    color: #495057;
 }
 
 .controls-grid {
@@ -349,7 +353,6 @@ watch(() => props.inputs, () => {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
-    color: #495057;
     font-size: 0.9rem;
 }
 
@@ -434,7 +437,6 @@ watch(() => props.inputs, () => {
 .input-description {
     margin-top: 4px;
     font-size: 0.8rem;
-    color: #6c757d;
     font-style: italic;
 }
 
@@ -446,6 +448,7 @@ watch(() => props.inputs, () => {
 .content-section.with-controls {
     position: relative;
 }
+
 
 /* Responsive layout */
 @media (max-width: 768px) {

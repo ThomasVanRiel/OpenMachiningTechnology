@@ -12,7 +12,7 @@ const members = [
   {
     avatar: 'https://avatars.githubusercontent.com/u/11393106',
     name: 'Thomas Van Riel',
-    title: 'Co-Author',
+    title: 'Co-Founder',
     links: [
       { icon: 'github', link: 'https://github.com/ThomasVanRiel'}
     ]
@@ -21,7 +21,7 @@ const members = [
   {
     avatar: '',
     name: 'K. D.',
-    title: 'Co-Author'
+    title: 'Co-Founder'
   }
 ]
 </script>
@@ -29,10 +29,10 @@ const members = [
 <VPTeamPage>
   <VPTeamPageTitle>
     <template #title>
-      The authors
+      The founders
     </template>
     <template #lead>
-      This book is written by these authors
+      This project is initiated by these founders
     </template>
   </VPTeamPageTitle>
   <VPTeamMembers :members />
