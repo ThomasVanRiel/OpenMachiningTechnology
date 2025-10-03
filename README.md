@@ -19,6 +19,14 @@ Book
 ### Citations
 Citations are formatted according to the APA guidelines (to avoid complex numbering schemes (IEEE) which are sadly difficult to interpret using multiple webpages)
 
+### Usage of AI/LLM
+We DO NOT use AI to generate content in this book.
+
+AI can be used as a tool to help writing and programming, but not for generation of content. The content of this book is 100% human written.
+**If you must use AI tools** for e.g. placeholder text generation, use a badge next to the heading to indicate how AI was used.
+``` markdown
+## Title <Badge type="warning" text="LLM Generated Placeholder" />
+```
 
 ## Instructions for contributors
 ### Initial setup
