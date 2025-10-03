@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import InteractiveContent from './InteractiveContent.vue'
+import InteractiveContent from '/components/InteractiveContent.vue'
 import * as d3 from 'd3'
 
 // Configuration for the interactive inputs
