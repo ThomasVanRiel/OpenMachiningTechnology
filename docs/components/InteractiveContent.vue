@@ -358,8 +358,7 @@ watch(() => props.inputs, () => {
 
 .value-display {
     font-weight: 500;
-    color: #007bff;
-    font-family: 'Courier New', monospace;
+    color: var(--slider-color);
 }
 
 .slider {
@@ -382,7 +381,7 @@ watch(() => props.inputs, () => {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #007bff;
+    background: var(--slider-color);
     cursor: pointer;
     transition: background-color 0.2s;
 }
@@ -395,7 +394,7 @@ watch(() => props.inputs, () => {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #007bff;
+    background: var(--slider-color);
     cursor: pointer;
     border: none;
     transition: background-color 0.2s;
@@ -418,7 +417,7 @@ watch(() => props.inputs, () => {
 .number-input:focus,
 .select-input:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--slider-color);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 

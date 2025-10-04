@@ -19,6 +19,7 @@
 import { ref, onMounted, watch } from 'vue'
 import InteractiveContent from '/components/InteractiveContent.vue'
 import * as d3 from 'd3'
+import { scale } from '@observablehq/plot'
 
 // Configuration for the interactive inputs
 const inputConfigs = ref([
@@ -45,13 +46,26 @@ const inputConfigs = ref([
         unit: '°',
         displayPrecision: 0,
         description: 'The angle between the relief face and the work surface'
+    },
+    {
+        name: 'cuttingDepth',
+        type: 'slider',
+        label: 'Cutting Depth (t)',
+        min: 0.1,
+        max: 5,
+        step: 0.1,
+        defaultValue: 1,
+        unit: 'mm',
+        displayPrecision: 1,
+        description: 'The depth of material removed in one pass of the cutting tool'
     }
 ])
 
 // Initial values for the inputs
 const initialValues = ref({
     rakeAngle: 10,
-    reliefAngle: 5
+    reliefAngle: 5,
+    cuttingDepth: 1
 })
 
 // Color configuration - centralized for easy maintenance
@@ -62,23 +76,25 @@ const colors = {
   referenceLines: 'black',     // Dashed reference lines
   hatchPattern: 'gray',        // Hatching pattern for cutting zone
   arrowMarker: 'black',         // Arrow marker color
-  labelText: '#333'            // Label text color
+  labelText: '#333',           // Label text color
+  workpiece: 'gray'         // Workpiece and chip color (brown)
 }
 
 // Numerical parameters - centralized for easy maintenance
 const params = {
   // Diagram geometry
-  lineLength: 200,             // Length of angle lines
-  arcRadius: 160,              // Radius for main angle arcs
-  betaRadius: 140,             // Radius for beta angle arc
+  lineLength: 240,             // Length of angle lines
+  arcRadius: 200,              // Radius for main angle arcs
+  betaRadius: 180,             // Radius for beta angle arc
   labelOffset: 20,             // Offset for angle labels from arcs
   centerY: 300,                // Y coordinate of diagram center
   
   // SVG dimensions and styling
   svgHeight: 500,              // SVG canvas height
   canvasHeight: 400,           // Canvas container height
-  lineStrokeWidth: 2,          // Main line stroke width
-  referenceStrokeWidth: 1,     // Reference line stroke width
+  lineStrokeWidth: 1.5,          // Main line stroke width
+  referenceStrokeWidth: 0.75,     // Reference line stroke width
+  scaleFactor: 40,             // Scaling factor in pixels per mm
   
   // Hatching pattern
   hatchSize: 8,                // Size of hatching pattern squares
@@ -109,7 +125,7 @@ const canvas = ref(null)
 
 let svg = null
 let containerWidth = 0
-let currentAngles = { rakeAngle: 10, reliefAngle: 5 }
+let currentAngles = { rakeAngle: 10, reliefAngle: 5, cuttingDepth: 1 }
 
 const drawDiagram = (values) => {
     // Update current angles if values provided
@@ -147,6 +163,8 @@ const drawDiagram = (values) => {
     const rakeRad = (currentAngles.rakeAngle * Math.PI) / 180
     const reliefRad = (currentAngles.reliefAngle * Math.PI) / 180
 
+    const shearRad = (Math.PI/2 + rakeRad)/2
+
     const x1 = containerWidth / 2
     const y1 = params.centerY
     
@@ -174,6 +192,61 @@ const drawDiagram = (values) => {
         .attr('stroke', colors.reliefAngle)
         .attr('stroke-width', params.lineStrokeWidth)
 
+    // Shear angle line
+    const y4 = y1 - currentAngles.cuttingDepth* params.scaleFactor
+    const x4 = x1 - currentAngles.cuttingDepth* params.scaleFactor/Math.tan(shearRad)
+
+    const shearLength = Math.sqrt((x4 - x1)**2 + (y4 - y1)**2)
+
+    svg.append('line')
+        .attr('x1', x1)
+        .attr('y1', y1)
+        .attr('x2', x4)
+        .attr('y2', y4)
+        .attr('stroke', colors.workpiece)
+        .attr('stroke-width', params.lineStrokeWidth)
+        .attr('stroke-dasharray', params.dashPattern)
+
+    // Cutting depth line (horizontal line to indicate cutting depth)
+    svg.append('line')
+        .attr('x1', x1-300)
+        .attr('y1', y1 - currentAngles.cuttingDepth * params.scaleFactor)
+        .attr('x2', x4)
+        .attr('y2', y4)
+        .attr('stroke', colors.workpiece)
+        .attr('stroke-width', params.lineStrokeWidth)
+
+    // Add arc to indicate chip from x4,y4 upward tangential to the rake face
+    const radius = 300
+    const startAngle = rakeRad + Math.PI/8
+    const chipArc = d3.arc()
+        .innerRadius(radius)
+        .outerRadius(radius)
+        .startAngle(startAngle) // Start from vertical (upward)
+        .endAngle(rakeRad + Math.PI/2) // End at rake angle (clockwise from vertical)
+
+    svg.append('path')
+        .attr('d', chipArc)
+        .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
+        .attr('fill', 'none')
+        .attr('stroke', colors.workpiece)
+        .attr('stroke-width', params.lineStrokeWidth)
+
+    // Arc for inner chip edge
+    const radiusInner = Math.sqrt(radius**2 + shearLength**2 - 2*radius*shearLength*Math.cos(shearRad - rakeRad))
+
+    const innerChipArc = d3.arc()
+        .innerRadius(radiusInner)
+        .outerRadius(radiusInner)
+        .startAngle(startAngle  ) // Start from vertical (upward)
+        .endAngle(Math.PI/2 +rakeRad- Math.acos((shearLength**2 - radiusInner**2 - radius**2)/(-2*radiusInner*radius))) // End at rake angle (clockwise from vertical)
+    svg.append('path')
+        .attr('d', innerChipArc)
+        .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
+        .attr('fill', 'none')
+        .attr('stroke', colors.workpiece)
+        .attr('stroke-width', params.lineStrokeWidth)
+    
     // Add reference lines for angle measurement
     // Vertical reference line for rake angle
     svg.append('line')
@@ -182,18 +255,17 @@ const drawDiagram = (values) => {
         .attr('x2', x1)
         .attr('y2', y1 - lineLength)
         .attr('stroke', colors.referenceLines)
-        .attr('stroke-width', params.referenceStrokeWidth)
+        .attr('stroke-width', params.lineStrokeWidth)
         .attr('stroke-dasharray', params.dashPattern)
 
-    // Horizontal reference line for clearance angle
+    // Horizontal reference line for clearance angle (= work surface)
     svg.append('line')
         .attr('x1', x1)
         .attr('y1', y1)
-        .attr('x2', x1 + lineLength)
+        .attr('x2', x1 + 300)
         .attr('y2', y1)
-        .attr('stroke', colors.referenceLines)
-        .attr('stroke-width', params.referenceStrokeWidth)
-        .attr('stroke-dasharray', params.dashPattern)
+        .attr('stroke', colors.workpiece)
+        .attr('stroke-width', params.lineStrokeWidth)
 
     // Add arcs to indicate angles
     
@@ -243,6 +315,7 @@ const drawDiagram = (values) => {
         .attr('points', `${endArrowX-params.arrowPolygonSize},${endArrowY-params.arrowPolygonLength} ${endArrowX+params.arrowPolygonSize},${endArrowY-params.arrowPolygonLength} ${endArrowX},${endArrowY+params.arrowPolygonTip}`)
         .attr('fill', colors.rakeAngle)
         .attr('transform', `rotate(${90}, ${endArrowX}, ${endArrowY})`)
+
 
     
 
