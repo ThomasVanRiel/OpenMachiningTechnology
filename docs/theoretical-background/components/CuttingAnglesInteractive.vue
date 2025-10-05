@@ -20,6 +20,7 @@ import { ref, onMounted, watch } from 'vue'
 import InteractiveContent from '/components/InteractiveContent.vue'
 import * as d3 from 'd3'
 import { scale } from '@observablehq/plot'
+import { min } from 'd3'
 
 // Configuration for the interactive inputs
 const inputConfigs = ref([
@@ -58,6 +59,13 @@ const inputConfigs = ref([
         unit: 'mm',
         displayPrecision: 1,
         description: 'The depth of material removed in one pass of the cutting tool'
+    },
+    {
+        name: 'showWork',
+        type: 'checkbox',
+        label: 'Show Workpiece and Chip',
+        defaultValue: true,
+        description: 'Toggle the visibility of the workpiece and chip in the diagram'
     }
 ])
 
@@ -65,7 +73,8 @@ const inputConfigs = ref([
 const initialValues = ref({
     rakeAngle: 10,
     reliefAngle: 5,
-    cuttingDepth: 1
+    cuttingDepth: 1,
+    showWork: true
 })
 
 // Color configuration - centralized for easy maintenance
@@ -125,7 +134,7 @@ const canvas = ref(null)
 
 let svg = null
 let containerWidth = 0
-let currentAngles = { rakeAngle: 10, reliefAngle: 5, cuttingDepth: 1 }
+let currentAngles = { rakeAngle: 10, reliefAngle: 5, cuttingDepth: 1, showWork: true }
 
 const drawDiagram = (values) => {
     // Update current angles if values provided
@@ -192,61 +201,72 @@ const drawDiagram = (values) => {
         .attr('stroke', colors.reliefAngle)
         .attr('stroke-width', params.lineStrokeWidth)
 
-    // Shear angle line
-    const y4 = y1 - currentAngles.cuttingDepth* params.scaleFactor
-    const x4 = x1 - currentAngles.cuttingDepth* params.scaleFactor/Math.tan(shearRad)
+    if (currentAngles.showWork){
+        // Shear angle line
+        const y4 = y1 - currentAngles.cuttingDepth* params.scaleFactor
+        const x4 = x1 - currentAngles.cuttingDepth* params.scaleFactor/Math.tan(shearRad)
 
-    const shearLength = Math.sqrt((x4 - x1)**2 + (y4 - y1)**2)
+        const shearLength = Math.sqrt((x4 - x1)**2 + (y4 - y1)**2)
 
-    svg.append('line')
-        .attr('x1', x1)
-        .attr('y1', y1)
-        .attr('x2', x4)
-        .attr('y2', y4)
-        .attr('stroke', colors.workpiece)
-        .attr('stroke-width', params.lineStrokeWidth)
-        .attr('stroke-dasharray', params.dashPattern)
+        svg.append('line')
+            .attr('x1', x1)
+            .attr('y1', y1)
+            .attr('x2', x4)
+            .attr('y2', y4)
+            .attr('stroke', colors.workpiece)
+            .attr('stroke-width', params.lineStrokeWidth)
+            .attr('stroke-dasharray', params.dashPattern)
 
-    // Cutting depth line (horizontal line to indicate cutting depth)
-    svg.append('line')
-        .attr('x1', x1-300)
-        .attr('y1', y1 - currentAngles.cuttingDepth * params.scaleFactor)
-        .attr('x2', x4)
-        .attr('y2', y4)
-        .attr('stroke', colors.workpiece)
-        .attr('stroke-width', params.lineStrokeWidth)
+        // Cutting depth line (horizontal line to indicate cutting depth)
+        svg.append('line')
+            .attr('x1', x1-300)
+            .attr('y1', y1 - currentAngles.cuttingDepth * params.scaleFactor)
+            .attr('x2', x4)
+            .attr('y2', y4)
+            .attr('stroke', colors.workpiece)
+            .attr('stroke-width', params.lineStrokeWidth)
 
-    // Add arc to indicate chip from x4,y4 upward tangential to the rake face
-    const radius = 300
-    const startAngle = rakeRad + Math.PI/8
-    const chipArc = d3.arc()
-        .innerRadius(radius)
-        .outerRadius(radius)
-        .startAngle(startAngle) // Start from vertical (upward)
-        .endAngle(rakeRad + Math.PI/2) // End at rake angle (clockwise from vertical)
+        // Add arc to indicate chip from x4,y4 upward tangential to the rake face
+        const radius = shearLength**1.5
+        //const startAngle = rakeRad + Math.PI/8
+        const startAngle = Math.max(rakeRad - Math.PI/3,-Math.PI/3)
+        const chipArc = d3.arc()
+            .innerRadius(radius)
+            .outerRadius(radius)
+            .startAngle(startAngle) // Start from vertical (upward)
+            .endAngle(rakeRad + Math.PI/2) // End at rake angle (clockwise from vertical)
 
-    svg.append('path')
-        .attr('d', chipArc)
-        .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
-        .attr('fill', 'none')
-        .attr('stroke', colors.workpiece)
-        .attr('stroke-width', params.lineStrokeWidth)
+        svg.append('path')
+            .attr('d', chipArc)
+            .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
+            .attr('fill', 'none')
+            .attr('stroke', colors.workpiece)
+            .attr('stroke-width', params.lineStrokeWidth)
 
-    // Arc for inner chip edge
-    const radiusInner = Math.sqrt(radius**2 + shearLength**2 - 2*radius*shearLength*Math.cos(shearRad - rakeRad))
+        // Arc for inner chip edge
+        const radiusInner = Math.sqrt(radius**2 + shearLength**2 - 2*radius*shearLength*Math.cos(shearRad - rakeRad))
 
-    const innerChipArc = d3.arc()
-        .innerRadius(radiusInner)
-        .outerRadius(radiusInner)
-        .startAngle(startAngle  ) // Start from vertical (upward)
-        .endAngle(Math.PI/2 +rakeRad- Math.acos((shearLength**2 - radiusInner**2 - radius**2)/(-2*radiusInner*radius))) // End at rake angle (clockwise from vertical)
-    svg.append('path')
-        .attr('d', innerChipArc)
-        .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
-        .attr('fill', 'none')
-        .attr('stroke', colors.workpiece)
-        .attr('stroke-width', params.lineStrokeWidth)
-    
+        const innerChipArc = d3.arc()
+            .innerRadius(radiusInner)
+            .outerRadius(radiusInner)
+            .startAngle(startAngle  ) // Start from vertical (upward)
+            .endAngle(Math.PI/2 +rakeRad- Math.acos((shearLength**2 - radiusInner**2 - radius**2)/(-2*radiusInner*radius))) // End at rake angle (clockwise from vertical)
+        svg.append('path')
+            .attr('d', innerChipArc)
+            .attr('transform', `translate(${x1-radius*Math.cos(rakeRad)}, ${y1-radius*Math.sin(rakeRad)})`)
+            .attr('fill', 'none')
+            .attr('stroke', colors.workpiece)
+            .attr('stroke-width', params.lineStrokeWidth)
+
+        svg.append('line')
+            .attr('x1', x1)
+            .attr('y1', y1)
+            .attr('x2', x1 + 300)
+            .attr('y2', y1)
+            .attr('stroke', colors.workpiece)
+            .attr('stroke-width', params.lineStrokeWidth)
+    }
+
     // Add reference lines for angle measurement
     // Vertical reference line for rake angle
     svg.append('line')
@@ -258,14 +278,17 @@ const drawDiagram = (values) => {
         .attr('stroke-width', params.lineStrokeWidth)
         .attr('stroke-dasharray', params.dashPattern)
 
-    // Horizontal reference line for clearance angle (= work surface)
-    svg.append('line')
+    if (!currentAngles.showWork) {
+        // Horizontal reference line for clearance angle (= work surface)
+        svg.append('line')
         .attr('x1', x1)
         .attr('y1', y1)
         .attr('x2', x1 + 300)
         .attr('y2', y1)
-        .attr('stroke', colors.workpiece)
+        .attr('stroke', colors.referenceLines)
         .attr('stroke-width', params.lineStrokeWidth)
+        .attr('stroke-dasharray', params.dashPattern)
+    }
 
     // Add arcs to indicate angles
     

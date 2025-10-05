@@ -4,7 +4,7 @@ import CuttingAnglesComponent from './components/CuttingAnglesInteractive.vue'
 # Cutting geometry
 
 ## Main cutting angles <Badge type="warning" text="LLM Generated Placeholder" />
-*Placeholder text provided by LLM*: Cutting angles are fundamental parameters in machining processes, directly influencing tool performance, chip formation, and surface finish. The rake angle (γ) determines how easily the material is sheared and affects the direction and flow of chips. A larger rake angle generally reduces cutting forces and improves chip evacuation, but may weaken the cutting edge. The wedge angle (β) defines the robustness of the tool; a larger wedge angle increases tool strength but may increase cutting resistance. The clearance angle (α) prevents the tool from rubbing against the workpiece, minimizing friction and heat generation, which helps maintain dimensional accuracy and prolongs tool life.
+Cutting angles are fundamental parameters in machining processes, directly influencing tool performance, chip formation, and surface finish. The rake angle (γ) determines how easily the material is sheared and affects the direction and flow of chips. A larger rake angle generally reduces cutting forces and improves chip evacuation, but may weaken the cutting edge. The wedge angle (β) defines the robustness of the tool; a larger wedge angle increases tool strength but may increase cutting resistance. The clearance angle (α) prevents the tool from rubbing against the workpiece, minimizing friction and heat generation, which helps maintain dimensional accuracy and prolongs tool life.
 
 Change the cutting angles using the sliders and observe how the cutting geometry changes. 
 <CuttingAnglesComponent />
