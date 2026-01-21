@@ -5,8 +5,8 @@ export const sidebar: DefaultTheme.Sidebar = [
   {
     text: 'I - Theoretical background',
     items: [
-      { text: 'Introduction', link: '/theoretical-background/introduction' },
-      { text: 'Equation Test', link: '/theoretical-background/equation-test' },
+      //{ text: 'Introduction', link: '/theoretical-background/introduction' },
+      //{ text: 'Equation Test', link: '/theoretical-background/equation-test' },
       { text: 'Cutting Geometry', link: '/theoretical-background/cutting-geometry' },
 
     ]
@@ -14,19 +14,19 @@ export const sidebar: DefaultTheme.Sidebar = [
   {
     text: 'II - Technological considerations',
     items: [
-      { text: 'Introduction', link: '/technological-considerations/introduction' },
-      { text: 'Kronenburg', link: '/technological-considerations/kronenburg' },
-      { text: 'Clamping', items: [
-        { text: 'Item A' },
-        { text: 'Item B' },
-
-    ]}]
+      //{ text: 'Introduction', link: '/technological-considerations/introduction' },
+      { text: 'Kronenburg', link: '/technological-considerations/kronenburg-diagram' },
+      //{ text: 'Clamping', items: [
+      //  { text: 'Item A' },
+      //  { text: 'Item B' },
+      //]}
+    ]
   },
   {
     text: 'III - Practical applications',
     items: [
-      { text: 'Introduction' },
-      { text: 'Item F' },
+      //{ text: 'Introduction' },
+      //{ text: 'Item F' },
     ]
   },
   { text: 'References', link: '/references' }

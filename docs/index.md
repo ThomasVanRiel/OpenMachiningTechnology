@@ -9,10 +9,10 @@ hero:
   actions:
     - theme: brand
       text: Text Example
-      link: /introduction-1
+      link: /theoretical-background/introduction.md
     - theme: alt
-      text: Equation Example
-      link: /taylor
+      text: Interactive Example
+      link: /technological-considerations/kronenburg-diagram
 
 features:
   - title: Part I - Theorethical background

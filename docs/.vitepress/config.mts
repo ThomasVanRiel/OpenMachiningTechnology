@@ -12,7 +12,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Read the book', link: '/about-this-book' },
-      { text: 'Authors', link: '/authors' },
+      //{ text: 'Authors', link: '/authors' },
     ],
     
     sidebar,

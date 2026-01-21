@@ -3,7 +3,7 @@ import MachiningWindow from './components/MachiningWindow.vue'
 import KronenbergPlot from './components/KronenbergPlot.vue'
 </script>
 
-# Kronenburg
+# Kronenburg diagram
 
 <KronenbergPlot />
 
