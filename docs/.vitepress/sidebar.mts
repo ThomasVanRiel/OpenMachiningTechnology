@@ -15,10 +15,11 @@ export const sidebar: DefaultTheme.Sidebar = [
     text: 'II - Technological considerations',
     items: [
       { text: 'Introduction', link: '/technological-considerations/introduction' },
+      { text: 'Kronenburg', link: '/technological-considerations/kronenburg' },
       { text: 'Clamping', items: [
         { text: 'Item A' },
         { text: 'Item B' },
-                  
+
     ]}]
   },
   {

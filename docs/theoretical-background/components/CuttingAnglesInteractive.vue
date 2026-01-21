@@ -173,6 +173,7 @@ const drawDiagram = (values) => {
     const reliefRad = (currentAngles.reliefAngle * Math.PI) / 180
 
     const shearRad = (Math.PI/2 + rakeRad)/2
+    //const shearRad = 17*Math.PI/180+rakeRad/2
 
     const x1 = containerWidth / 2
     const y1 = params.centerY
