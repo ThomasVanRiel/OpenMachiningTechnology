@@ -407,6 +407,10 @@ watch(() => props.inputs, () => {
     overflow: hidden;
 }
 
+.dark .interactive-content-container {
+    background: #1e2837;
+}
+
 .interactive-content-container.expanded {
     position: relative;
     z-index: 26; /* above VitePress sidebar (25 on desktop), below nav (30) */
