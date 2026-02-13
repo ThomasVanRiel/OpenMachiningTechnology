@@ -6,9 +6,12 @@
         controls-position="top"
         :debounce-ms="10"
         @update:values="onValuesUpdate"
+        expandable
+        expanded-width="70vw"
+        expanded-height="80vh"
     >
-        <template #default>
-            <div class="kronenberg-wrapper">
+        <template #default="{ expanded }">
+            <div class="kronenberg-wrapper" :class="{ 'kronenberg-expanded': expanded }">
                 <div ref="containerRef" class="kronenberg-container">
                     <canvas ref="canvasRef"></canvas>
                 </div>
@@ -690,6 +693,17 @@ onUnmounted(() => {
 <style scoped>
 .kronenberg-wrapper {
     @apply w-full;
+}
+
+.kronenberg-wrapper.kronenberg-expanded {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.kronenberg-wrapper.kronenberg-expanded .kronenberg-container {
+    flex: 1;
+    height: auto;
 }
 
 .kronenberg-container {

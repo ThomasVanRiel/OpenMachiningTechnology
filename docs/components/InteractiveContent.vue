@@ -1,5 +1,26 @@
 <template>
-    <div class="interactive-content-container">
+    <div
+        ref="containerEl"
+        class="interactive-content-container"
+        :class="{ expanded: isExpanded }"
+        :style="isExpanded ? expandedStyle : undefined"
+    >
+        <!-- Expand Button -->
+        <button v-if="expandable" class="expand-btn" @click="toggleExpand" :title="isExpanded ? 'Collapse' : 'Expand'">
+            <svg v-if="!isExpanded" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+        </button>
+
         <!-- Controls Section -->
         <div v-if="showControls" class="controls-section" :class="controlsPosition">
             <div class="controls-header" v-if="controlsTitle">
@@ -121,13 +142,13 @@
 
         <!-- Content Section -->
         <div class="content-section" :class="{ 'with-controls': showControls }">
-            <slot :values="values" :updateValue="updateValue"></slot>
+            <slot :values="values" :updateValue="updateValue" :expanded="isExpanded"></slot>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 
 // Input configuration interface
 const props = defineProps({
@@ -177,11 +198,88 @@ const props = defineProps({
     debounceMs: {
         type: Number,
         default: 50
+    },
+
+    // Enable the expand button
+    expandable: {
+        type: Boolean,
+        default: false
+    },
+
+    // Width when expanded (any CSS width value, e.g. '90vw', '1200px')
+    expandedWidth: {
+        type: String,
+        default: '90vw'
+    },
+
+    // Height when expanded (any CSS height value, e.g. '80vh', '900px'). Unset = auto height.
+    expandedHeight: {
+        type: String,
+        default: ''
     }
 })
 
 // Emit events
 const emit = defineEmits(['update:values', 'input-change'])
+
+// Expand state
+const isExpanded = ref(false)
+const containerEl = ref(null)
+const NAV_HEIGHT = 80 // VitePress nav bar + margin
+
+const expandedStyle = computed(() => {
+    if (!isExpanded.value) return {}
+    const w = `max(100%, ${props.expandedWidth})`
+    const style = {
+        width: w,
+        marginLeft: `calc((${w} - 100%) / -2)`,
+    }
+    if (props.expandedHeight) {
+        style.height = props.expandedHeight
+    }
+    return style
+})
+
+const onScrollWhileExpanded = () => {
+    if (!containerEl.value || !isExpanded.value) return
+    const top = containerEl.value.getBoundingClientRect().top
+    if (top < NAV_HEIGHT) {
+        collapse()
+    }
+}
+
+const collapse = () => {
+    if (!isExpanded.value) return
+    isExpanded.value = false
+    window.removeEventListener('scroll', onScrollWhileExpanded, true)
+    // Signal children to re-render at new width
+    requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'))
+    })
+}
+
+const toggleExpand = () => {
+    if (isExpanded.value) {
+        collapse()
+        return
+    }
+
+    isExpanded.value = true
+
+    // Signal children to re-render at new width
+    requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'))
+    })
+
+    // Watch scroll to collapse when top edge reaches the nav bar
+    window.addEventListener('scroll', onScrollWhileExpanded, true)
+}
+
+const onEscKey = (e) => {
+    if (e.key === 'Escape' && isExpanded.value) {
+        collapse()
+    }
+}
 
 // Reactive state
 const values = reactive({})
@@ -277,9 +375,15 @@ defineExpose({
 // Initialize on mount
 onMounted(() => {
     initializeValues()
-    
+    document.addEventListener('keydown', onEscKey)
+
     // Initial emission
     emit('update:values', { ...values })
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('keydown', onEscKey)
+    window.removeEventListener('scroll', onScrollWhileExpanded, true)
 })
 
 // Watch for changes in inputs prop to reinitialize
@@ -292,13 +396,52 @@ watch(() => props.inputs, () => {
 .interactive-content-container {
     box-sizing: border-box;
     display: block;
+    position: relative;
     padding: 16px;
     margin: 16px -16px;
-    
-    background: rgba(99, 185, 255, 0.14);
+
+    background: #e9f5ff;
     border-radius: 8px;
-    
-    font-family: "Source Sans 3", sans-serif ;
+
+    font-family: "Source Sans 3", sans-serif;
+    overflow: hidden;
+}
+
+.interactive-content-container.expanded {
+    position: relative;
+    z-index: 26; /* above VitePress sidebar (25 on desktop), below nav (30) */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.expanded .content-section {
+    flex: 1;
+    min-height: 0;
+}
+
+.expand-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s, background 0.2s;
+}
+
+.expand-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.12);
 }
 
 .interactive-content-container.left,
